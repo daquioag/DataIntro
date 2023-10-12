@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button>submit</button>
+    <form id="query_form">
+      <textarea id="sql_query"></textarea>
+      <input type="submit" value="submit" id="submit_button" onclick="sendQuery(); return false;"/>
+    </form>
+    <textarea></textarea>
+    <p id="feedback"></p>
+  </body>
+  <script>
+    function validateQuery(query){
+        if (!searchWord) {
+            document.getElementById("feedback").innerHTML = 'Please provide an SQL Query';
+            return "Please provide a search term.";
+        }
+        const new_query = query.toLowerCase();
+        if (new_query.includes("select")){
+            getQuery(query)
+            return "GET" 
+        } else if (new_query.includes("insert")){
+            return "POST" 
+        } else if (new_query.includes("select") && new_query.includes("insert")){
+            return "INVALID SQL QUERY: Cant do select and insert!"
+        } else{
+            return "INVALID SQL QUERY:"
+        }
+
+    }
+    function sendQuery() {
+        const query = document.getElementById("sql_query").value;
+        const sql_query = "sql_query"
+
+
+
+
+    }
+
+        function getQuery(query){
+            const sql_query = "sql_query"
+    
+            fetch(`https://comp4537.com/labs/lab5?query=${query}`) 
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(`query '${query}' didnt work for some reason!`);
+            }
+            return response.json();
+        })
+            .then(data => {
+                console.log('Success:', data);
+                // document.getElementById("feedback").innerHTML = `${data.definition}`;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // document.getElementById("word_definition").innerHTML = 'Word not found.';
+            });
+        
+        }
+  </script>
+</html>
