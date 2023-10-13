@@ -5,62 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
+
   <body>
-    <button>submit</button>
+    <button id="default_queries_button" onclick="sendDefaultQuery()">
+      submit default queries
+    </button>
     <form id="query_form">
       <textarea id="sql_query"></textarea>
-      <input type="submit" value="submit" id="submit_button" onclick="sendQuery(); return false;"/>
+      <input
+        type="submit"
+        value="submit request"
+        id="submit_button"
+        onclick="validateQuery(); return false;"
+      />
     </form>
-    <textarea></textarea>
     <p id="feedback"></p>
+    <p id="response"></p>
+    <p id="queries"></p>
+
   </body>
   <script>
-    function validateQuery(query){
-        if (!searchWord) {
-            document.getElementById("feedback").innerHTML = 'Please provide an SQL Query';
-            return "Please provide a search term.";
-        }
-        const new_query = query.toLowerCase();
-        if (new_query.includes("select")){
-            getQuery(query)
-            return "GET" 
-        } else if (new_query.includes("insert")){
-            return "POST" 
-        } else if (new_query.includes("select") && new_query.includes("insert")){
-            return "INVALID SQL QUERY: Cant do select and insert!"
-        } else{
-            return "INVALID SQL QUERY:"
-        }
+    function sendDefaultQuery() {
+      const defaultQuery =
+        "INSERT INTO patients (name, dateOfBirth) VALUES " +
+        '("Sara Brown", "1990-01-01"), ' +
+        '("John Smith", "1941-01-01"), ' +
+        '("Jack Ma", "1911-01-30"), ' +
+        '("Elon Musk", "1999-01-01")';
 
-    }
-    function sendQuery() {
+        sendQuery(defaultQuery);
+
+    };
+
+    function validateQuery() {
+        const instructionString =  "Please provide an SQL Query";
+        const selectAndInsertErrorMessage = "INVALID SQL QUERY: Both SELECT and INSERT are not allowed for security reasons!";
+        const invalidSqlMessage =  "INVALID SQL QUERY!";
+
         const query = document.getElementById("sql_query").value;
-        const sql_query = "sql_query"
 
+      if (!query.trim()) {
+        document.getElementById("feedback").innerHTML = instructionString
+        return;
+      }
 
+      const newQuery = query.toLowerCase();
+      if (newQuery.includes("select")) {
+        getQuery(query);
+      } else if (newQuery.includes("insert")) {
+        sendQuery(query);
+      } else if (newQuery.includes("select") && newQuery.includes("insert")) {
+        document.getElementById("feedback").innerHTML = selectAndInsertErrorMessage;
+      } else {
+        document.getElementById("feedback").innerHTML = invalidSqlMessage;
+      }
+    };
 
-
+    function sendQuery(query) {
+      fetch(`https://comp4537.com/labs/lab5`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: query }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          console.log(data.message);
+          document.getElementById(
+            "feedback"
+          ).innerHTML = `Attemping to save.... \n ${data.message}`;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          (document.getElementById("feedback").innerHTML =
+            "Error saving word and definition: "),
+            error;
+        });
     }
 
-        function getQuery(query){
-            const sql_query = "sql_query"
-    
-            fetch(`https://comp4537.com/labs/lab5?query=${query}`) 
-            .then(response => {
-            if (!response.ok) {
-                throw new Error(`query '${query}' didnt work for some reason!`);
-            }
-            return response.json();
+    function getQuery(query) {
+      const sql_query = "sql_query";
+
+      fetch(`https://comp4537.com/labs/lab5?query=${query}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`query '${query}' didnt work for some reason!`);
+          }
+          return response.json();
         })
-            .then(data => {
-                console.log('Success:', data);
-                // document.getElementById("feedback").innerHTML = `${data.definition}`;
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                // document.getElementById("word_definition").innerHTML = 'Word not found.';
-            });
-        
-        }
+        .then((data) => {
+          console.log("Success:", data);
+          console.log("MEssage:", data.message);
+          document.getElementById("feedback").innerHTML = "YAAAY IT WORKED";
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("feedback").innerHTML = "NOOO IT didntwork WORKED";
+        });
+    }
+
+
+    function sendQuery() {
+      const successMessage = "Success:";
+      const errorMessage = "Error:";
+      const defaultMessage = "Attemping to Post Default Queries.... ";
+      const errorString = "Error with SQL Query! ";
+      const badRequestString = "Bad Request";
+      const defaultQuery =
+        "INSERT INTO patients (name, dateOfBirth) VALUES " +
+        '("Sara Brown", "1990-01-01"), ' +
+        '("John Smith", "1941-01-01"), ' +
+        '("Jack Ma", "1911-01-30"), ' +
+        '("Elon Musk", "1999-01-01")';
+
+      fetch(`https://comp4537.com/labs/lab5`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: defaultQuery }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(successMessage, data);
+          console.log(data.message);
+          document.getElementById("feedback").innerHTML = defaultMessage;
+          document.getElementById("response").innerHTML = `${data.message}`;
+        })
+        .catch((error) => {
+          console.error(errorMessage, error);
+          document.getElementById("feedback").innerHTML = errorString + error;
+        });
+    }
   </script>
 </html>
