@@ -1,94 +1,114 @@
-const http = require('http');
+const http = require("http");
 const url = require("url");
-
 
 const mysql = require("mysql");
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "compcom_compcom",
-    password: "*******",
-    database: "compcom_nodemysql"
+  host: "localhost",
+  user: "compcom_compcom",
+  password: "*******",
+  database: "compcom_nodemysql",
 });
 
-db.connect(function(err) {
-    if (err) throw err;
-    console.log("Connecting to database....");
-    const sql = "CREATE TABLE IF NOT EXISTS patients (patientId INT(11)  NOT NULL AUTO_INCREMENT, name VARCHAR(100), dateOfBirth DATETIME, PRIMARY KEY (Personid))"; 
-    db.query(sql, function (err, result) {
-      if (err) throw err;
-      console.log("CONNECTED! Table exsits or was created!");
-    });
+db.connect(function (err) {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+    return;
+  }
+  console.log("Connected to the database");
+  const sql =
+    "CREATE TABLE IF NOT EXISTS patients (patientId INT(11)  NOT NULL AUTO_INCREMENT, name VARCHAR(100), dateOfBirth DATETIME, PRIMARY KEY (patientId))";
+  db.query(sql, function (err, result) {
+    if (err) {
+      console.error("Error creating table:", err);
+      // Handle the error appropriately, e.g., return an error response to the client
+      return;
+    }
+    console.log("CONNECTED! Table exsits or was created!");
+    console.log("Query result:", result);
   });
+});
 
 const server = http.createServer(function (req, res) {
-    
-    console.log("The server received a request!");
+  const parsedUrl = url.parse(req.url);
+  const pathName = parsedUrl.pathname;
 
-    // Enable CORS (Cross-Origin Resource Sharing) for all routes
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  // Enable CORS (Cross-Origin Resource Sharing) for all routes
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-    if (req.method === "OPTIONS") {
-        // Preflight request, respond successfully
-        res.writeHead(200);
-        res.end();
-        return;
+  if (req.method === "OPTIONS") {
+    // Preflight request, respond successfully
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
+  if (pathName.includes("/labs/lab5/api/v1/sql") && req.method === "GET") {
+    const parsedUrl = url.parse(req.url, true);
+    const new_query = parsedUrl.query.query;
+    // Check if the 'query' parameter is missing or empty
+    //const new_query = parsedUrl.query.query;
+    if (!new_query || new_query.trim() === "") {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          error: "Bad Request",
+          details: "Query parameter is missing or empty",
+        })
+      );
+      return;
     }
-    let new_query;
+    console.log("Executing SQL query:", new_query);
 
+    db.query(new_query, function (err, result) {
+        handleQueryError(res, err);
+      console.log("Query result:", result);
+      const response = JSON.stringify({
+        success: true,
+        message: "SQL Query processed!",
+        result: result,
+      });
 
-    if (req.method === "GET"){
-        const parsedUrl = url.parse(req.url, true);
-        new_query = parsedUrl.query.query;
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(response);
+    });
+  } else if (pathName === "/labs/lab5/api/v1/sql" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
 
-        console.log("Executing SQL query:", new_query);
+    req.on("end", () => {
+      const { query } = JSON.parse(body);
+      db.query(query, function (err, result) {
+        handleQueryError(res, err);
+      });
+      console.log("Query result:", result);
+      const response = JSON.stringify({
+        success: true,
+        message: result.message,
+        result: result,
+      });
 
-        db.query(new_query, function(err, result) {
-            if (err) throw err;
-            console.log("Query result:", result);
-            // Assuming the result is an array of rows
-            const response = JSON.stringify(result);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(response);
+    });
+  } else {
+    // Handle other HTTP methods if needed
+    res.writeHead(405, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Method Not Allowed" }));
+  }
 
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(response);
-        });
+  function handleQueryError(res, err, result) {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({ error: "Internal Server Error", details: err.message })
+      );
+      return;
     }
-
-    if (req.method === "POST" && new_query){
-
-        console.log("Executing SQL query:", new_query.trim());
-
-        db.query(new_query, function(err, result) {
-            if (err) throw err;
-            console.log("Query result:", result);
-            // Assuming the result is an array of rows
-            const response = JSON.stringify(result);
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(response);
-        });
-    } else{
-        const insertSql = "INSERT INTO patients (name, dateOfBirth) VALUES (?, ?)";
-        const values = [
-          ['Sara Brown', '1901-01-01'],
-          ['John Smith', '1941-01-01'],
-          ['Jack Ma', '1911-01-30'],
-          ['Elon Musk', '1999-01-01']
-        ];
-        
-
-        const sql = "INSERT INTO patients name dateOfBirth values ('Sara Brown', 1901-01-01), ('Tanner Brown', 1901-01-01),  "; 
-        db.query(insertSql, values, function(err, result) {
-            if (err) throw err;
-            console.log("Query result:", result);
-            // Assuming the result is an array of rows
-            const response = JSON.stringify(result);
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(response);
-        });   
-    }
-
+  }
 });
 server.listen();

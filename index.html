@@ -62,7 +62,7 @@
     };
 
     function sendQuery(query) {
-      fetch(`https://comp4537.com/labs/lab5`, {
+      fetch(`https://comp4537.com/labs/lab5/api/v1/sql`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@
     function getQuery(query) {
       const sql_query = "sql_query";
 
-      fetch(`https://comp4537.com/labs/lab5?query=${query}`)
+      fetch(`https://comp4537.com/labs/lab5/api/v1/sql/?query=${query}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`query '${query}' didnt work for some reason!`);
@@ -97,7 +97,7 @@
         })
         .then((data) => {
           console.log("Success:", data);
-          console.log("MEssage:", data.message);
+          console.log("Message:", data.message);
           document.getElementById("feedback").innerHTML = "YAAAY IT WORKED";
         })
         .catch((error) => {
@@ -120,7 +120,7 @@
         '("Jack Ma", "1911-01-30"), ' +
         '("Elon Musk", "1999-01-01")';
 
-      fetch(`https://comp4537.com/labs/lab5`, {
+      fetch(`https://comp4537.com/labs/lab5/api/v1/sql`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +129,7 @@
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(successMessage, data);
+          console.log(successMessage, data.successMessage);
           console.log(data.message);
           document.getElementById("feedback").innerHTML = defaultMessage;
           document.getElementById("response").innerHTML = `${data.message}`;
