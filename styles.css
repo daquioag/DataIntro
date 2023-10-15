@@ -3,7 +3,7 @@ body {
   /* Additional styles for the body */
   /* background: linear-gradient(180deg, #CAFF73, #ffffff) no-repeat  fixed;  */
   background: linear-gradient(180deg, #caff73 0%, rgba(255, 255, 255, 0) 100%);
-  color: white; /* Set text color to contrast with the gradient background */
+  color: black; /* Set text color to contrast with the gradient background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,3 +82,15 @@ textarea {
 .default_text{
     font-weight: bold;
 }
+
+
+
+@media screen and (max-width: 600px) {
+    form {
+      width: 90%;
+    }
+  
+    #default_container {
+      width: 90%;
+    }
+  }
