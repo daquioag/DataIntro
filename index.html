@@ -5,16 +5,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
-    <button id="default_queries_button" onclick="sendDefaultQuery()">
-        submit default queries
-    </button>
-    <form id="query_form">
-        <textarea id="sql_query"></textarea>
-        <input type="submit" value="submit request" id="submit_button" onclick="validateQuery(); return false;" />
-    </form>
+    <div id="main_container">
+
+        <div id="default_container">
+
+            <h1 class="default_text" id="title">Comp 4537 Lab 5: Intro to DataBases</h1>
+
+            <p class="default_text" id="description">Clicking the "Submit Default Queries" button will insert four patients into our database automatically.
+                Feel free to write and submit your custom SQL queries in the textbox; however, only INSERT and SELECT queries are accepted.</p>
+            
+            <button id="default_queries_button" class="button" onclick="sendDefaultQuery()">
+                submit default queries &#9993
+            </button>
+    
+        </div>
+
+
+        <form id="query_form">
+            <h2 id="form_title">SQL Query Form</h2>
+            <textarea id="sql_query"></textarea>
+            <input type="submit" value="submit request &#128640" id="submit_button" class="button" onclick="validateQuery(); return false;" />
+        </form>
+    </div>
+
     <p id="feedback"></p>
     <p id="response"></p>
     <p id="queries"></p>
