@@ -1,17 +1,20 @@
+
+  @import url('https://fonts.googleapis.com/css2?family=Hind&family=Nunito:wght@300&family=Orbitron:wght@400;500&family=Quicksand&display=swap');
 body {
   font-family: "Orbitron", sans-serif;
-  /* Additional styles for the body */
-  /* background: linear-gradient(180deg, #CAFF73, #ffffff) no-repeat  fixed;  */
   background: linear-gradient(180deg, #caff73 0%, rgba(255, 255, 255, 0) 100%);
-  color: black; /* Set text color to contrast with the gradient background */
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+
 }
 
 #main_container {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .button {
@@ -22,21 +25,34 @@ body {
   text-decoration: none;
   margin: 4px 2px;
   border: none;
-  box-shadow: 4px 4px #78aa14;
+  box-shadow: 5px 5px #78aa14;
   border-radius: 8px;
 }
 
-h1{
-    font-size: 48px;
+h1 {
+  font-size: 48px;
 }
 
-#title,
-#description {
-  color: #17cbbe; /* Set text color to contrast with the gradient background */
+#title {
+  text-align: center;
+  font-weight: 500;
+  color: #17cbbe;
+
+}
+
+#description,p {
+  font-weight: 400;
+  color: #17cbbe;
+
+
 }
 
 textarea {
   border-radius: 8px;
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 form {
@@ -48,49 +64,93 @@ form {
   flex-direction: column;
   align-items: center;
   gap: 32px;
-
   border-radius: 12px;
   background: var(--teal, #17cbbe);
   box-shadow: 12px 12px 0px 0px #00a69a;
 }
 
-textarea {
-  width: 100%;
-  height: 300px;
-  padding: 20px;
-
-  box-sizing: border-box;
-}
-
 #form_title {
-  color: #000000; /* Set text color to contrast with the gradient background */
-  text-align: center; /* Center the text */
+  color: #000000;
+  /* Set text color to contrast with the gradient background */
+  text-align: center;
+  /* Center the text */
 }
 
 #default_container {
   width: 600px;
   height: 500px;
-
-  align-items: center;
   justify-content: center;
-
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.default_text{
-    font-weight: bold;
+
+table {
+  width: 600px;
+  height: 500px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 10px;
+  /* Adjust the value as needed */
+  /* border: 2px solid #17cbbe; */
+  background-color: white;
+  box-shadow: 12px 12px 0px 0px #00a69a;
+  vertical-align: middle;
+  border-top: 2px solid #17cbbe;
+  border-bottom: 2px solid #17cbbe;
+
+
+}
+
+th:first-child,
+td:first-child {
+  border-left: 2px solid #17cbbe;
+}
+
+th:last-child,
+td:last-child {
+  border-right: 2px solid #17cbbe;
 }
 
 
 
-@media screen and (max-width: 600px) {
-    form {
-      width: 90%;
-    }
-  
-    #default_container {
-      width: 90%;
-    }
+
+@media screen and (max-width: 700px) {
+  * {
+    box-sizing: border-box;
   }
+
+  body {
+    width: 90%;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  #main_container {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    padding: 1px;
+    margin: 100px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  form,
+  #default_container {
+    border: 10px solid black;
+    gap: 32px;
+
+    width: 100%;
+    /* Adjust the width as needed */
+  }
+}
