@@ -41,8 +41,9 @@ h1 {
 }
 
 #description,p {
-  font-weight: 400;
+  font-weight: 500;
   color: #17cbbe;
+  Line-height: 175%
 
 
 }
@@ -90,6 +91,7 @@ table {
   width: 600px;
   height: 500px;
   border-collapse: collapse;
+  margin-bottom: 50px;
 }
 
 th,
