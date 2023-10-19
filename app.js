@@ -1,6 +1,7 @@
 const http = require("http");
 const url = require("url");
 const mysql = require("mysql");
+const query_result = "Query result:"
 
 // Define all hard-coded strings and constants
 const STRINGS = {
@@ -46,13 +47,14 @@ db.connect(function (err) {
             return;
         }
         console.log(STRINGS.TABLE_EXISTS_OR_CREATED);
-        console.log("Query result:", result);
+        console.log(query_result, result);
     });
 });
 
 const server = http.createServer(function (req, res) {
     const parsedUrl = url.parse(req.url);
     const pathName = parsedUrl.pathname;
+    const query_result = "Query result:"
 
     // Enable CORS (Cross-Origin Resource Sharing) for all routes
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -80,7 +82,7 @@ const server = http.createServer(function (req, res) {
         console.log(STRINGS.EXECUTING_SQL, new_query);
         db.query(new_query, function (err, result) {
             handleQueryError(res, err);
-            console.log("Query result:", result);
+            console.log(query_result, result);
             const response = JSON.stringify({
                 success: true,
                 message: MESSAGE_SQL_PROCESSED,
@@ -100,7 +102,7 @@ const server = http.createServer(function (req, res) {
             const { query } = JSON.parse(body);
             db.query(query, function (err, result) {
                 handleQueryError(res, err);
-                console.log("Query result:", result);
+                console.log(query_result, result);
                 const response = JSON.stringify({
                     success: true,
                     message: result.message,

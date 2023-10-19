@@ -97,7 +97,6 @@
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("Success:", data);
                 console.log(data.message);
                 document.getElementById("feedback_container").innerHTML = defaultMessage;
                 document.getElementById("response").innerHTML = `${data.message}`;
@@ -109,19 +108,23 @@
     }
 
     function getQuery(query) {
+        const success = "Success:"
+        const message = "message"
+
         const querySuccess = "Query successful!";
         const queryUnSuccess = "NOOO IT didnt work!";
+        const errorMessage = `query '${query}' didnt work for some reason!`
 
         fetch(`https://comp4537.com/labs/lab5/api/v1/sql/?query=${query}`)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error(`query '${query}' didnt work for some reason!`);
+                    throw new Error(errorMessage);
                 }
                 return response.json();
             })
             .then((data) => {
-                console.log("Success:", data);
-                console.log("Message:", data.message);
+                console.log(success, data);
+                console.log(message, data.message);
                 document.getElementById("feedback").innerHTML = querySuccess;
                 document.getElementById("feedback_container").innerHTML = "";
                 document.getElementById("response").innerHTML = "";
