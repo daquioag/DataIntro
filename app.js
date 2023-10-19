@@ -2,6 +2,18 @@ const http = require("http");
 const url = require("url");
 
 const mysql = require("mysql");
+
+const ERROR_BAD_REQUEST = {
+    error: "Bad Request",
+    details: "Query parameter is missing or empty"
+};
+const ERROR_METHOD_NOT_ALLOWED = {
+    error: "Method Not Allowed"
+};
+const ERROR_INTERNAL_SERVER = "Internal Server Error";
+const SQL_PATIENTS_TABLE = "CREATE TABLE IF NOT EXISTS patients (patientId INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100), dateOfBirth DATETIME, PRIMARY KEY (patientId))";
+const MESSAGE_SQL_PROCESSED = "SQL Query processed!";
+
 const db = mysql.createConnection({
     host: "localhost",
     user: "compcom_compcom",
@@ -15,9 +27,7 @@ db.connect(function (err) {
         return;
     }
     console.log("Connected to the database");
-    const sql =
-        "CREATE TABLE IF NOT EXISTS patients (patientId INT(11)  NOT NULL AUTO_INCREMENT, name VARCHAR(100), dateOfBirth DATETIME, PRIMARY KEY (patientId))";
-    db.query(sql, function (err, result) {
+    db.query(SQL_PATIENTS_TABLE, function (err, result) {
         if (err) {
             console.error("Error creating table:", err);
             // Handle the error appropriately, e.g., return an error response to the client
@@ -52,12 +62,7 @@ const server = http.createServer(function (req, res) {
 
         if (!new_query || new_query.trim() === "") {
             res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(
-                JSON.stringify({
-                    error: "Bad Request",
-                    details: "Query parameter is missing or empty",
-                })
-            );
+            res.end(JSON.stringify(ERROR_BAD_REQUEST));
             return;
         }
         console.log("Executing SQL query:", new_query);
@@ -67,7 +72,7 @@ const server = http.createServer(function (req, res) {
             console.log("Query result:", result);
             const response = JSON.stringify({
                 success: true,
-                message: "SQL Query processed!",
+                message: MESSAGE_SQL_PROCESSED,
                 result: result,
             });
 
@@ -97,7 +102,7 @@ const server = http.createServer(function (req, res) {
     } else {
         // Handle other HTTP methods if needed
         res.writeHead(405, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Method Not Allowed" }));
+        res.end(JSON.stringify(ERROR_METHOD_NOT_ALLOWED));
     }
 
     function handleQueryError(res, err) {
@@ -105,7 +110,7 @@ const server = http.createServer(function (req, res) {
             console.error("Error executing SQL query:", err);
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(
-                JSON.stringify({ error: "Internal Server Error", details: err.message })
+                JSON.stringify({ error: ERROR_INTERNAL_SERVER, details: err.message })
             );
             return;
         }
